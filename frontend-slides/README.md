@@ -1,158 +1,79 @@
-# Frontend Slides
+# frontend-slides
 
-A Claude Code skill for creating stunning, animation-rich HTML presentations — from scratch or by converting PowerPoint files.
+创建零依赖、动画丰富的 HTML 演示文稿。
 
-## What This Does
+## 核心特性
 
-**Frontend Slides** helps non-designers create beautiful web presentations without knowing CSS or JavaScript. It uses a "show, don't tell" approach: instead of asking you to describe your aesthetic preferences in words, it generates visual previews and lets you pick what you like.
+- **零依赖** — 单个 HTML 文件，CSS/JS 内联，无需 npm 或构建工具
+- **所见即所得** — 生成视觉预览，而非抽象选择
+- **独特美学** — 避免通用的 "AI 风格"，每个演示都应有独特质感
+- **生产级质量** — 代码注释完整、无障碍友好、性能优良
 
-### Key Features
+## 使用方式
 
-- **Zero Dependencies** — Single HTML files with inline CSS/JS. No npm, no build tools, no frameworks.
-- **Visual Style Discovery** — Can't articulate design preferences? No problem. Pick from generated visual previews.
-- **PPT Conversion** — Convert existing PowerPoint files to web, preserving all images and content.
-- **Anti-AI-Slop** — Curated distinctive styles that avoid generic AI aesthetics (bye-bye, purple gradients on white).
-- **Production Quality** — Accessible, responsive, well-commented code you can customize.
+### 从零创建演示文稿
 
-## Installation
+1. 告诉技能你的演示目的（融资、教学、会议等）
+2. 选择幻灯片数量
+3. 提供内容（文字、图片）或仅提供主题
+4. 选择视觉风格（可通过预览选择）
+5. 生成完整演示
 
-### For Claude Code Users
+### 转换 PPT
 
-Copy the skill files to your Claude Code skills directory:
+直接上传 `.pptx` 文件，技能会：
+1. 提取所有内容（文字、图片、备注）
+2. 让你确认结构
+3. 选择风格
+4. 生成 HTML 演示
 
-```bash
-# Create the skill directory
-mkdir -p ~/.claude/skills/frontend-slides
+## 风格选择
 
-# Copy the files (or download from this repo)
-cp SKILL.md ~/.claude/skills/frontend-slides/
-cp STYLE_PRESETS.md ~/.claude/skills/frontend-slides/
-```
+提供多种预设风格：
 
-Then use it by typing `/frontend-slides` in Claude Code.
+| 风格 | 氛围 | 适用场景 |
+|------|------|----------|
+| Bold Signal | 自信、高冲击 | 融资演讲、主题演讲 |
+| Electric Studio | 简洁、专业 | 代理公司演示 |
+| Creative Voltage | 活力、复古现代 | 创意 pitch |
+| Dark Botanical | 优雅、精致 | 高端品牌 |
+| Notebook Tabs | 编辑风、条理 | 报告、回顾 |
+| Pastel Geometry | 友好、亲和 | 产品概述 |
+| Neon Cyber | 未来感、科技 | 科技创业 |
 
-### Manual Download
+## 视口适配
 
-1. Download `SKILL.md` and `STYLE_PRESETS.md` from this repo
-2. Place them in `~/.claude/skills/frontend-slides/`
-3. Restart Claude Code
+**每张幻灯片必须完全适应视口**，禁止滚动。
 
-## Usage
+- 每张幻灯片 = 100vh / 100dvh
+- 使用 `clamp()` 实现响应式排版
+- 内容密度限制：每张幻灯片最多 4-6 个要点
 
-### Create a New Presentation
+## 导航方式
 
-```
-/frontend-slides
+- 键盘：← → 方向键 或 空格键
+- 滚轮/触摸滑动
+- 点击右侧导航点跳转
 
-> "I want to create a pitch deck for my AI startup"
-```
+## 编辑功能
 
-The skill will:
-1. Ask about your content (slides, messages, images)
-2. Ask about the feeling you want (impressed? excited? calm?)
-3. Generate 3 visual style previews for you to compare
-4. Create the full presentation in your chosen style
-5. Open it in your browser
+用户可选择是否需要内联编辑功能：
+- 悬停左上角或按 `E` 键进入编辑模式
+- 直接在浏览器中编辑文字
+- Ctrl+S 保存文件
 
-### Convert a PowerPoint
+## 技术栈
 
-```
-/frontend-slides
+- 纯 HTML/CSS/JavaScript
+- Fontshare / Google Fonts 字体
+- CSS scroll-snap 实现幻灯片切换
+- Intersection Observer 实现滚动动画
 
-> "Convert my presentation.pptx to a web slideshow"
-```
+## 相关技能
 
-The skill will:
-1. Extract all text, images, and notes from your PPT
-2. Show you the extracted content for confirmation
-3. Let you pick a visual style
-4. Generate an HTML presentation with all your original assets
+- **feishu-html-content**: 将 HTML 内容分享到飞书
+- **frontend-design**: 更复杂的交互页面
 
-## Included Styles
+## 许可
 
-### Dark Themes
-- **Neon Cyber** — Futuristic, techy, particle effects
-- **Midnight Executive** — Premium, corporate, trustworthy
-- **Deep Space** — Cinematic, inspiring, vast
-- **Terminal Green** — Developer-focused, hacker aesthetic
-
-### Light Themes
-- **Paper & Ink** — Editorial, literary, refined
-- **Swiss Modern** — Clean, Bauhaus-inspired, geometric
-- **Soft Pastel** — Friendly, playful, creative
-- **Warm Editorial** — Magazine-style, photographic
-
-### Specialty
-- **Brutalist** — Raw, bold, attention-grabbing
-- **Gradient Wave** — Modern SaaS aesthetic
-
-## Output Example
-
-Each presentation is a single, self-contained HTML file:
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <!-- Fonts, CSS variables, all styles inline -->
-</head>
-<body>
-    <section class="slide title-slide">
-        <h1 class="reveal">Your Title</h1>
-    </section>
-
-    <section class="slide">
-        <h2 class="reveal">Slide Content</h2>
-    </section>
-
-    <!-- Navigation: Arrow keys, scroll, swipe, or click dots -->
-    <script>
-        // SlidePresentation controller, animations, interactions
-    </script>
-</body>
-</html>
-```
-
-Features included:
-- Keyboard navigation (arrows, space)
-- Touch/swipe support
-- Mouse wheel scrolling
-- Progress bar
-- Navigation dots
-- Scroll-triggered animations
-- Responsive design
-- Reduced motion support
-
-## Philosophy
-
-This skill was born from the belief that:
-
-1. **You don't need to be a designer to make beautiful things.** You just need to react to what you see.
-
-2. **Dependencies are debt.** A single HTML file will work in 10 years. A React project from 2019? Good luck.
-
-3. **Generic is forgettable.** Every presentation should feel custom-crafted, not template-generated.
-
-4. **Comments are kindness.** Code should explain itself to future-you (or anyone else who opens it).
-
-## Files
-
-| File | Purpose |
-|------|---------|
-| `SKILL.md` | Main skill instructions for Claude Code |
-| `STYLE_PRESETS.md` | Reference file with 10 curated visual styles |
-
-## Requirements
-
-- [Claude Code](https://claude.ai/claude-code) CLI
-- For PPT conversion: Python with `python-pptx` library
-
-## Credits
-
-Created by [@zarazhangrui](https://github.com/zarazhangrui) with Claude Code.
-
-Inspired by the "Vibe Coding" philosophy — building beautiful things without being a traditional software engineer.
-
-## License
-
-MIT — Use it, modify it, share it.
+MIT
