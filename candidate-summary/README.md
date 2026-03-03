@@ -1,112 +1,121 @@
-# Candidate Summary Skill
+# 候选人沟通总结 Skill
 
-An OpenClaw skill that generates candidate communication summaries in your personal writing style based on interview notes or audio transcriptions.
+将用户上传的候选人沟通录音，转写并整理为符合特定语言风格的结构化沟通总结文档。
 
-## Overview
+## 概述
 
-This skill analyzes candidate information (from audio transcriptions, interview notes, or other sources) and generates professional communication summaries that match your established writing style. Based on your extensive examples of candidate evaluations, the skill produces summaries with:
+此技能用于处理候选人面谈/沟通的音频文件（.ogg, .mp3, .wav 等），自动生成结构化的沟通总结。适用于以下场景：
+- 用户上传候选人面谈/沟通的音频文件，并要求输出沟通总结、候选人总结、面试记录
+- 用户说"帮我总结一下这个录音"、"输出沟通总结"、"写一下这个候选人的总结"
+- 用户在批量处理候选人录音时说"下一个"、"继续"
 
-- Consistent structure and formatting
-- Professional yet personal tone
-- Comprehensive candidate assessment
-- Clear recommendations and next steps
+## 工作流程
 
-## Features
-
-- **Style Preservation**: Maintains your unique writing style learned from your existing summaries
-- **Structured Output**: Follows your proven format for candidate evaluations  
-- **Comprehensive Analysis**: Covers technical skills, motivation, personality traits, and cultural fit
-- **Actionable Recommendations**: Provides clear interview guidance and decision rationale
-- **Risk Assessment**: Identifies potential concerns or red flags when applicable
-
-## Usage
-
-### Prerequisites
-- Audio transcription of candidate conversation OR written interview notes
-- Candidate basic information (name, school, role/position)
-
-### Input Format
-Provide candidate information in any of these formats:
-- Raw interview notes
-- Audio transcription text  
-- Structured candidate data
-
-### Output Format
-The skill generates summaries following your established pattern:
-
-```
-"Name-School Position/Role
-Current status and background context.
-Key motivations and career preferences.
-Notable achievements or formative experiences.
-Personality traits and working style observations.
-[Optional: Risk considerations or concerns]
-【Conclusion】: Clear recommendation with specific interview focus areas."
+### Step 1: 音频转写
+使用 `faster-whisper` 对音频文件进行中文转写。
+```bash
+pip install faster-whisper --break-system-packages
 ```
 
-## Style Guidelines
-
-Based on your examples, summaries should include:
-
-### Structure Elements
-1. **Header**: `姓名-学校 专业/职位`
-2. **Current Status**: Academic/professional current situation
-3. **Background Story**: Educational journey, competition experience, career decisions
-4. **Motivation Analysis**: Why they're interested in startups/specific roles
-5. **Key Events**: Most proud achievements, transformative experiences
-6. **Character Assessment**: Communication skills, logical thinking, execution style
-7. **Risk Notes**: Potential concerns (when applicable)
-8. **Conclusion**: Clear recommendation + specific interview evaluation points
-
-### Writing Style
-- **Concise and direct**: Use short sentences, avoid unnecessary elaboration
-- **Fact-based with judgment**: Combine objective facts with subjective assessment
-- **Specific details**: Include concrete company names, competition names, technical specifics
-- **Human-centered**: Consider family influence, personal values, emotional drivers
-- **Professional terminology**: Use accurate technical terms (ROS, PCB, embedded systems, etc.)
-
-## Examples
-
-### Input Example
-```
-Candidate: Zhang Chaoran, Dalian Polytechnic University, Mechanical Structural Engineer
-Currently seeking startup opportunities because feels limited for big companies like Yunjing, Stone, Kuma. 
-Wants to work on practical problems rather than four-legged/humanoid robots without real applications.
-Originally planned to take postgraduate exam at Taiyuan University but abandoned due to curriculum changes.
-Most proud achievement: Beat Northeastern University Action team in provincial competition.
-When asked about personal growth from achieving unexpected success, responded there was no significant change.
+```python
+from faster_whisper import WhisperModel
+model = WhisperModel("small", device="cpu", compute_type="int8")
+segments, info = model.transcribe(
+    "<音频文件路径>",
+    language="zh",
+    initial_prompt="候选人 RoboMaster RM 嵌入式 结构工程师 算法 考研 战队 机器人 步兵 英雄 哨兵 工程机器人 完整形态视频 超级对抗赛 分区赛 联盟赛 国赛 Robocon 视觉 PCB ROS 底盘 云台 大疆 PREMIR"
+)
+for segment in segments:
+    print(f"[{segment.start:.1f}s -> {segment.end:.1f}s] {segment.text}")
 ```
 
-### Output Example  
+**注意事项：**
+- 优先使用 `small` 模型，平衡准确率和速度
+- `initial_prompt` 中加入行业术语（如 RoboMaster、嵌入式、PCB 等）以提升专有名词识别率
+- 如果音频文件超过 30 分钟，考虑使用 `tiny` 模型并开启 VAD 过滤
+- 人名、学校名容易识别错误，输出时应提醒用户确认
+
+### Step 2: 整理为沟通总结
+基于转写文本，按照指定结构和语言风格整理输出。
+
+## 输出结构
+
+每位候选人的总结遵循以下框架（按顺序，非每项必须，视录音内容而定）：
+
 ```
-"张超然-大连工业大学机械结构工程师 大厂（云鲸、石头、库犸）几乎没戏，想找个创业公司（主要是因为能力局限性，其次关注到四足、人形机器人没有落地场景，希望能做一些能解决实际问题的事情）。 原计划考研太原工业大学，因专业课更改，放弃。 最有成就感的事情是，在省赛打败东北大学 Action 团队，但是追问“做到了以为自己做不到的事情”给自己带来的改变，回答没有什么明显的体感。 【结论】：推荐面试，面试过程中重点考量其过去所做的实质性结构设计工作，各位评估其能否胜任我们的结构工程师岗位。"
+**姓名-学校全称+岗位方向**
+1. 当前状态（年级、是否在校、是否在实习、到岗时间）
+2. 求职/考研背景（为什么找工作、为什么不考研/考研未上岸等）
+3. RM/比赛经历（参赛角色、负责内容、关键事件）
+4. 比赛带来的成长与改变（追问"体感"层面的真实变化）
+5. 对大厂vs创业公司的看法
+6. 当前薪资/offer情况
+7. 印象深刻的细节（用户在沟通中观察到的亮点或疑虑）
+8.【结论】：推荐面试 / 待定 / 不推荐，附理由及面试重点考察方向
 ```
 
-## Installation
+**不是每个候选人都会覆盖所有项。**严格根据录音中提到的内容来写，不要编造或补充录音中没有的信息。
 
-1. Place the skill files in your OpenClaw skills directory
-2. Ensure the skill is properly referenced in your workspace
-3. The skill will be automatically available when processing candidate-related requests
+## 语言风格规范
 
-## Integration
+### 核心原则
+- **简洁克制，以事实陈述为主**：不堆砌形容词，不做过度解读
+- **主观判断点到即止**：在关键处加入个人判断，如"令我印象深刻的是"、"我觉得这个 sense 非常难得"、"我个人对他的技术能力表示担忧"
+- **保留候选人原话**：善于用候选人自己的表达来呈现其状态和动机，用引号标注，如"再有3年就能上市"、"不是在创造自己的产品"
+- **记录行为细节**：如候选人主动调研团队、自掏腰包买配件等具体行为
 
-This skill works seamlessly with:
-- Audio transcription services (provide transcribed text as input)
-- Interview note-taking workflows
-- Candidate evaluation pipelines
-- Recruitment communication processes
+### 语气特征
+- 不用"首先、其次、最后"等生硬连接词
+- 不用"该候选人"，直接用"他/她"或省略主语
+- 转折用"但是"、"但"，而非"然而"、"不过"
+- 因果用"之所以...是因为..."、"主要是因为..."
+- 评价常用句式："相对来讲"、"对我们的产品比较贴切"、"重点考察其..."
 
-## Customization
+### 【结论】部分的写法
+- **推荐面试**：明确写"推荐面试"，附上面试重点考察方向
+  - 例：【结论】：推荐面试。面试过程中重点考察其结构设计能力，能否满足我们下一阶段对伙伴技术能力的基本要求。
+- **待定**：写"待定"，附上主要顾虑
+  - 例：【结论】：待定。主要顾虑是这个人的表达方式相对来讲比较极端，我很担心他和团队之间的相处。
+- **不推荐**：直接写不推荐，附理由
+- 结论中可以附加条件，如"但也可以安排面试，看一下具体的能力"
 
-To further refine the output style:
-1. Provide additional example summaries
-2. Specify preferred emphasis areas (technical vs. cultural fit vs. motivation)
-3. Adjust conclusion templates based on role requirements
+### 禁止事项
+- 不使用 emoji
+- 不使用 bullet points / 编号列表（正文部分用自然段落）
+- 不加标题头（如"### 基本信息"之类）——除了姓名行和【结论】
+- 不做总结性收尾段落（如"总体来看..."）
+- 不编造录音中没有提到的内容
+- 不美化或弱化用户的判断（如用户说"我不是特别喜欢这个人，说不出来为什么"，就原样保留）
 
-## License
+## 示例
 
-MIT License - Feel free to adapt and extend for your recruitment workflow needs.
+以下是一个完整的输出示例，供参考风格和结构：
 
-## Author
+---
+**裴潇勇-南航金城学院结构工程师**
 
-Generated and maintained by your OpenClaw assistant based on your established communication patterns.
+目前大四，已不在学校，目前在一家从事运动硬件的公司实习。连续参加 3 年比赛，并在 RM2025 赛季担任队长。
+
+8 月比赛结束后，计划备考研究生考试，目标院校为南航，然而在综合评估自己的能力及兴趣后，在十月一放弃考研。在大疆的面试中未通过，影石、库犸等企业未经过简历筛选。
+
+选择目前这家公司的根本原因在于其战队学长在这家公司，向其表达过团队氛围比较好，"再有 3 年就能上市"，所以其加入了目前的实习公司。该公司共计 60 人左右，主要用户面向海外，公司氛围较好，没有层级，但其呆着不是特别开心，理由是感觉目前自己的工作不是在创造自己的产品。
+
+对方希望能够创造出自己妈妈（代表着大多数消费者）也能用的产品，会觉得非常有成就感。
+---
+
+## 边界情况
+
+- **人名/校名识别错误**：语音识别对人名和学校名容易出错，输出后务必提醒用户确认
+- **录音中有多个候选人**：如果一段录音包含多个候选人，分别输出，每人独立一份总结
+- **录音内容不完整或模糊**：对于无法确认的内容，不要猜测，可以标注"（此处录音不清晰）"
+- **录音很长（>30分钟）**：使用 tiny 模型 + VAD 过滤，或分段处理
+
+## 安装与使用
+
+1. 将技能文件放置在 OpenClaw 的 skills 目录中
+2. 确保技能在 workspace 中正确引用
+3. 当处理候选人相关请求时，技能将自动可用
+
+## 许可证
+
+MIT License - 可自由适应和扩展以满足您的招聘工作流程需求。
