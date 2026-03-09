@@ -1,80 +1,173 @@
-# Aiden Skills
+# feishu-full-access 技能
 
-AI Agent 可复用技能集合 — 从实战中提炼，每个技能都经过真实场景验证。
+飞书完整权限技能，让 AI 能够像你一样操作飞书日历、云文档和多维表格。
 
-## Skills 一览
+## 安装
 
-| 技能 | 一句话描述 | 依赖工具 |
-|------|-----------|----------|
-| [candidate-summary](./candidate-summary/) | 候选人沟通录音 → 结构化面试总结 | faster-whisper |
-| [feishu-calendar](./feishu-calendar/) | 通过 API 创建飞书日历日程 | Feishu Open API (Node.js) |
-| [feishu-full-access](./feishu-full-access/) | 飞书完整权限技能（日历+云文档+多维表格） | Feishu OpenAPI (OAuth) |
-| [feishu-html-content](./feishu-html-content/) | 将 HTML 代码完整写入飞书云文档 | Feishu/Lark MCP |
-| [frontend-slides](./frontend-slides/) | 创建零依赖、动画丰富的 HTML 演示文稿 | 纯 HTML/CSS/JS |
-| [html2feishu](./html2feishu/) | HTML 文件 → 飞书云文档（支持大文件分块） | Feishu/Lark MCP |
-| [web-scrape-to-feishu](./web-scrape-to-feishu/) | 网页数据抓取 → 飞书多维表格 | Safari MCP + Feishu/Lark MCP |
+将 `feishu-full-access` 文件夹复制到 OpenClaw 的 skills 目录：
 
-## 技能详情
-
-### candidate-summary
-将候选人面谈录音通过 `faster-whisper` 转写，再按照特定语言风格整理为结构化沟通总结。输出包含候选人背景、经历、评价和面试建议，风格简洁克制、以事实为主。
-
-### feishu-calendar
-Node.js 脚本，通过飞书开放 API 在个人日历中创建日程事件。支持自定义标题、描述、时间和时区，通过环境变量配置即可运行。
-
-### feishu-full-access
-飞书完整权限技能，使 AI 能够通过 OAuth 用户授权后访问日历、云文档和多维表格。支持批量授权 64 个权限，包含日程管理、云文档 CRUD、多维表格数据操作、文档搜索等完整功能。适合需要深度集成飞书的场景。
-
-### feishu-html-content
-将生成的 HTML 代码完整复制到飞书云文档中分享。对于超过 10KB 的大文件，自动在 HTML 标签边界处分块写入，保证结构完整性。
-
-### frontend-slides
-从零创建或从 PPT 转换为单文件 HTML 演示文稿。零依赖、CSS/JS 内联、支持键盘/滚轮/触摸导航。提供 7 种预设视觉风格，每张幻灯片严格适配视口。
-
-### html2feishu
-将 HTML 文件上传为飞书云文档，优先完整写入，仅在超限时自动分块。经实战验证可处理 50KB+ 文件，保持代码完整无损。
-
-### web-scrape-to-feishu
-通过 Safari MCP 浏览网页并用 JavaScript 批量提取数据，排序筛选后写入飞书多维表格。包含小红书等平台的选择器经验和飞书 API 踩坑记录。
-
-## 目录结构
-
-```
-aiden-skills/
-├── README.md                    # 本文件
-├── candidate-summary/
-│   ├── README.md
-│   └── SKILL.md
-├── feishu-calendar/
-│   ├── README.md
-│   ├── SKILL.md
-│   ├── create_event.js
-│   └── package.json
-├── feishu-full-access/
-│   ├── README.md
-│   └── SKILL.md
-├── feishu-html-content/
-│   ├── README.md
-│   └── SKILL.md
-├── frontend-slides/
-│   ├── README.md
-│   ├── SKILL.md
-│   ├── STYLE_PRESETS.md
-│   └── LICENSE
-├── html2feishu/
-│   ├── README.md
-│   └── SKILL.md
-└── web-scrape-to-feishu/
-    ├── README.md
-    └── skill.md
+```bash
+cp -r ~/.openclaw/workspace/skills/feishu-full-access ~/.openclaw/extensions/feishu-openclaw-plugin/skills/
 ```
 
-## 使用方式
+或使用 ClawHub：
 
-每个技能文件夹中：
-- **README.md** — 快速了解功能、依赖和使用方法
-- **SKILL.md / skill.md** — 完整的执行流程、提示词和踩坑记录，供 AI Agent 直接参考
+```bash
+clawhub install feishu-full-access
+```
 
-## License
+## 功能
 
-MIT
+| 功能 | 说明 |
+|------|------|
+| 📅 日程管理 | 创建、查询、修改、删除日程 |
+| 📆 日历管理 | 获取用户主日历 ID |
+| ⏰ 忙闲查询 | 查询用户忙碌/空闲状态 |
+| 📁 云文档 | 列出、上传、下载、删除文件 |
+| 📊 多维表格 | 列出表格、增删改查记录 |
+| 🔍 文档搜索 | 搜索云文档和知识库 |
+| 👤 用户信息 | 获取当前用户信息 |
+
+## 快速开始
+
+### 1. 首次授权
+
+首次使用需要用户完成 OAuth 授权：
+
+```
+你：帮我查看今天的日程
+AI：已发送授权请求，请完成授权后告诉我
+你：我已完成授权
+AI：（正常查询并返回日程）
+```
+
+### 2. 查看日程
+
+```
+你：查看我的日程
+AI：调用 feishu_get_user → feishu_calendar_calendar → feishu_calendar_event
+    返回今日日程列表
+```
+
+### 3. 操作云文档
+
+```
+你：列出我的云文档
+AI：调用 feishu_drive_file(action=list)
+    返回文件列表
+```
+
+### 4. 操作多维表格
+
+```
+你：查看候选人申请表
+AI：调用 feishu_bitable_app(action=list) → feishu_bitable_app_table(action=list)
+    → feishu_bitable_app_table_record(action=list)
+    返回表格数据
+```
+
+## 授权流程详解
+
+### ⚠️ 重要：授权是自动化的，不要手动拼接链接！
+
+**飞书 MCP 工具的授权是自动化的**，AI 无需自己生成授权链接：
+
+1. 当调用需要授权的 API 时，工具会**自动**向用户发送授权请求卡片
+2. 卡片中的链接是飞书官方生成的，由系统自动推送
+3. AI 只需要等待用户说"我已完成授权"
+
+**常见错误**：
+- ❌ 试图自己生成授权链接
+- ❌ 使用格式错误的固定链接
+- ❌ 链接缺少必要参数
+
+**正确做法**：
+- ✅ 依赖 `feishu_oauth_batch_auth` 工具
+- ✅ 或让 API 在需要时自动触发授权
+
+### 方式一：按需授权
+
+1. 调用任意需要授权的 API（如 `feishu_drive_file.list`）
+2. 返回 `awaiting_authorization: true`，系统自动发送授权卡片
+3. 用户点击卡片中的链接完成授权
+4. 用户说"我已完成授权"
+5. 再次调用相同的 API 即可
+
+### 方式二：批量授权（推荐首次使用）
+
+1. 调用 `feishu_oauth_batch_auth`
+2. 系统发送授权卡片（50个权限），用户完成授权
+3. 用户说"我已完成授权"
+4. 再次调用 `feishu_oauth_batch_auth`
+5. 用户完成剩余 14 个权限的授权
+6. 完成！
+
+### 授权包含的权限
+
+共 64 个权限，涵盖：
+- 日历读写（Calendars、Events）
+- 云空间文件管理（Drive、Files）
+- 多维表格操作（Bitable）
+- 用户信息读取（Contact、Users）
+- 文档搜索（Search）
+
+## 常用命令示例
+
+### 日程操作
+
+```python
+# 查看今日日程
+feishu_calendar_event(action="instance_view", start_time="2026-03-09T00:00:00+08:00", end_time="2026-03-09T23:59:59+08:00", calendar_id="feishu.cn_xxx")
+
+# 创建日程
+feishu_calendar_event(action="create", summary="会议", start_time="2026-03-09T14:00:00+08:00", end_time="2026-03-09T15:00:00+08:00", user_open_id="ou_xxx")
+
+# 查询忙闲
+feishu_calendar_freebusy(action="list", time_min="2026-03-09T09:00:00+08:00", time_max="2026-03-09T18:00:00+08:00", user_ids=["ou_xxx"])
+```
+
+### 云文档操作
+
+```python
+# 列出文件
+feishu_drive_file(action="list")
+
+# 下载文件
+feishu_drive_file(action="download", file_token="xxx", output_path="/tmp/file.pdf")
+
+# 上传文件
+feishu_drive_file(action="upload", file_path="/tmp/example.pdf")
+```
+
+### 多维表格操作
+
+```python
+# 列出多维表格
+feishu_bitable_app(action="list")
+
+# 查询记录
+feishu_bitable_app_table_record(action="list", app_token="xxx", table_id="xxx")
+
+# 创建记录
+feishu_bitable_app_table_record(action="create", app_token="xxx", table_id="xxx", fields={"姓名": "张三"})
+
+# 筛选记录
+feishu_bitable_app_table_record(action="list", app_token="xxx", table_id="xxx", filter={"conjunction": "and", "conditions": [{"field_name": "姓名", "operator": "contains", "value": ["陈"]}]})
+```
+
+## 注意事项
+
+1. **时间格式**：必须使用 ISO 8601 格式，如 `2026-03-09T14:00:00+08:00`
+2. **用户身份**：所有操作以用户身份执行
+3. **token 过期**：如果返回 `token_expired`，需要用户重新授权
+4. **分页**：列表 API 支持 `page_token` 分页
+
+## 相关技能
+
+- [feishu-calendar](./feishu-calendar) - 日历与日程管理
+- [feishu-bitable](./feishu-bitable) - 多维表格操作
+- [feishu-im-read](./feishu-im-read) - 消息读取
+- [feishu-task](./feishu-task) - 任务管理
+- [feishu-create-doc](./feishu-create-doc) - 创建文档
+- [feishu-fetch-doc](./feishu-fetch-doc) - 获取文档
+- [feishu-update-doc](./feishu-update-doc) - 更新文档
