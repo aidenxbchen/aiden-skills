@@ -8,6 +8,7 @@ AI Agent 可复用技能集合 — 从实战中提炼，每个技能都经过真
 |------|-----------|----------|
 | [candidate-summary](./candidate-summary/) | 候选人沟通录音 → 结构化面试总结 | faster-whisper |
 | [feishu-calendar](./feishu-calendar/) | 通过 API 创建飞书日历日程 | Feishu Open API (Node.js) |
+| [feishu-full-access](./feishu-full-access/) | 飞书完整权限技能（日历+云文档+多维表格） | Feishu OpenAPI (OAuth) |
 | [feishu-html-content](./feishu-html-content/) | 将 HTML 代码完整写入飞书云文档 | Feishu/Lark MCP |
 | [frontend-slides](./frontend-slides/) | 创建零依赖、动画丰富的 HTML 演示文稿 | 纯 HTML/CSS/JS |
 | [html2feishu](./html2feishu/) | HTML 文件 → 飞书云文档（支持大文件分块） | Feishu/Lark MCP |
@@ -20,6 +21,9 @@ AI Agent 可复用技能集合 — 从实战中提炼，每个技能都经过真
 
 ### feishu-calendar
 Node.js 脚本，通过飞书开放 API 在个人日历中创建日程事件。支持自定义标题、描述、时间和时区，通过环境变量配置即可运行。
+
+### feishu-full-access
+飞书完整权限技能，使 AI 能够通过 OAuth 用户授权后访问日历、云文档和多维表格。支持批量授权 64 个权限，包含日程管理、云文档 CRUD、多维表格数据操作、文档搜索等完整功能。适合需要深度集成飞书的场景。
 
 ### feishu-html-content
 将生成的 HTML 代码完整复制到飞书云文档中分享。对于超过 10KB 的大文件，自动在 HTML 标签边界处分块写入，保证结构完整性。
@@ -46,6 +50,9 @@ aiden-skills/
 │   ├── SKILL.md
 │   ├── create_event.js
 │   └── package.json
+├── feishu-full-access/
+│   ├── README.md
+│   └── SKILL.md
 ├── feishu-html-content/
 │   ├── README.md
 │   └── SKILL.md
